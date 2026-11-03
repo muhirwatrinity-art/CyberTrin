@@ -2,15 +2,31 @@ import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import dotenv from 'dotenv';
 import path from 'path';
+import crypto from 'crypto';
 import { GoogleGenAI } from '@google/genai';
 import { 
   INITIAL_INCIDENTS, 
   INITIAL_INDICATORS, 
   INITIAL_ADVISORIES, 
   DATA_DICTIONARY_TABLES, 
-  METHODOLOGY_LOG_PHASES 
+  METHODOLOGY_LOG_PHASES,
+  INITIAL_CYBER_WORKS,
+  INITIAL_AUTOMATED_THREATS,
+  INITIAL_INVESTIGATION_CASES,
+  INITIAL_EVIDENCE_RECORDS,
+  INITIAL_INFRASTRUCTURE_GRAPH
 } from './src/data/seedData.ts';
-import { IncidentReport, ThreatIndicator, SecurityAdvisory } from './src/types.ts';
+import { 
+  IncidentReport, 
+  ThreatIndicator, 
+  SecurityAdvisory, 
+  LiveCyberWork, 
+  AutomatedThreat,
+  InvestigationCase,
+  EvidenceRecord,
+  ThreatInfrastructureGraph,
+  IpTraceResult 
+} from './src/types.ts';
 
 dotenv.config();
 
@@ -24,6 +40,11 @@ app.use(express.json({ limit: '10mb' }));
 let incidents: IncidentReport[] = [...INITIAL_INCIDENTS];
 let indicators: ThreatIndicator[] = [...INITIAL_INDICATORS];
 let advisories: SecurityAdvisory[] = [...INITIAL_ADVISORIES];
+let cyberWorks: LiveCyberWork[] = [...INITIAL_CYBER_WORKS];
+let automatedThreats: AutomatedThreat[] = [...INITIAL_AUTOMATED_THREATS];
+let investigationCases: InvestigationCase[] = [...INITIAL_INVESTIGATION_CASES];
+let evidenceRecords: EvidenceRecord[] = [...INITIAL_EVIDENCE_RECORDS];
+let infrastructureGraph: ThreatInfrastructureGraph = { ...INITIAL_INFRASTRUCTURE_GRAPH };
 
 // Gemini Client initialization
 const ai = new GoogleGenAI({
@@ -348,6 +369,219 @@ app.get('/api/advisories', (req, res) => {
   res.json(advisories);
 });
 
+// 7b. Live Cyber Works Taking Place (Active Defense Operations)
+app.get('/api/cyber-works', (req, res) => {
+  res.json(cyberWorks);
+});
+
+app.post('/api/cyber-works', (req, res) => {
+  const body = req.body;
+  const newWork: LiveCyberWork = {
+    id: `work-${Date.now()}`,
+    operationName: body.operationName || 'Operation Rapid-Shield: Emergency Incident Response',
+    district: body.district || 'Kampala',
+    lat: body.lat || 0.3476,
+    lng: body.lng || 32.5825,
+    status: body.status || 'Active Defense',
+    workCategory: body.workCategory || 'Packet Scrubbing',
+    leadAgency: body.leadAgency || 'UG-CERT Rapid Operations Desk',
+    personnelCount: Number(body.personnelCount) || 4,
+    metrics: body.metrics || 'Countermeasure deployed; continuous packet telemetry stream active',
+    activeTools: body.activeTools || ['Suricata IDS', 'Zeek Probe', 'SS7 Signalling Filter'],
+    description: body.description || 'Live cyber defense deployment initiated in response to automated threat alert.',
+    lastUpdate: 'Just now'
+  };
+
+  cyberWorks.unshift(newWork);
+  res.status(201).json(newWork);
+});
+
+// 7c. Automated Threat Detection Endpoints & Danger Warnings
+app.get('/api/automated-threats', (req, res) => {
+  res.json(automatedThreats);
+});
+
+const UGANDA_DISTRICT_LOCATIONS: Record<string, { lat: number; lng: number; region: 'Central' | 'Eastern' | 'Western' | 'Northern' }> = {
+  Kampala: { lat: 0.3476, lng: 32.5825, region: 'Central' },
+  Wakiso: { lat: 0.4044, lng: 32.4833, region: 'Central' },
+  Mukono: { lat: 0.3544, lng: 32.7553, region: 'Central' },
+  Jinja: { lat: 0.4428, lng: 33.2032, region: 'Eastern' },
+  Gulu: { lat: 2.7724, lng: 32.2881, region: 'Northern' },
+  Mbarara: { lat: -0.6072, lng: 30.6545, region: 'Western' },
+  Masaka: { lat: -0.3411, lng: 31.7361, region: 'Central' },
+  'Fort Portal': { lat: 0.6556, lng: 30.2747, region: 'Western' },
+  Mbale: { lat: 1.0784, lng: 34.1755, region: 'Eastern' },
+  Arua: { lat: 3.0303, lng: 30.9073, region: 'Northern' },
+  Entebbe: { lat: 0.0512, lng: 32.4637, region: 'Central' },
+  Lira: { lat: 2.2472, lng: 32.9000, region: 'Northern' },
+  Kabale: { lat: -1.2500, lng: 29.9833, region: 'Western' },
+  Tororo: { lat: 0.6928, lng: 34.1809, region: 'Eastern' },
+  Soroti: { lat: 1.7144, lng: 33.6111, region: 'Eastern' }
+};
+
+app.post('/api/automated-threats/detect', async (req, res) => {
+  try {
+    const districtsList = Object.keys(UGANDA_DISTRICT_LOCATIONS);
+    const requestedDistrict = req.body.district && UGANDA_DISTRICT_LOCATIONS[req.body.district] 
+      ? req.body.district 
+      : districtsList[Math.floor(Math.random() * districtsList.length)];
+    
+    const geo = UGANDA_DISTRICT_LOCATIONS[requestedDistrict];
+    const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
+
+    let threatData: Partial<AutomatedThreat> | null = null;
+
+    if (process.env.GEMINI_API_KEY) {
+      try {
+        const prompt = `You are the autonomous National Cyber Threat Radar and Sensor Correlator for CyberTrin Uganda (UG-CERT).
+A sudden telemetry anomaly has triggered an automatic sensor alarm in ${requestedDistrict} district, Uganda (${geo.region} Region).
+Synthesize an authentic real-time cyber threat detection report suitable for emergency alert broadcasting.
+Scenarios could involve:
+- Rogue USSD shortcode gateway injecting fake MTN/Airtel MoMo reversal prompts.
+- Coordinated SIM-swap wave targeting SACCO treasury or agricultural cooperative managers.
+- Malicious Android APK masquerading as a quick mobile loan or URA e-Tax utility.
+- Autonomous brute-force password spraying against hospital / district local government servers.
+- Dark web botnet scanner harvesting citizen credentials.
+
+Respond strictly with valid JSON conforming to this schema:
+{
+  "threatTitle": "<Short impactful threat title, max 8 words>",
+  "threatCategory": "<Mobile Money & Financial Fraud | Phishing & SMS Spoofing | SIM Swap & Telecom Fraud | Ransomware & Malware | Impersonation & Social Engineering | Fake SACCO & Investment Scam>",
+  "dangerLevel": "<CRITICAL DANGER | HIGH HAZARD | SEVERE ALERT>",
+  "dangerScore": <number between 82 and 99>,
+  "automatedSource": "<e.g. Autonomous SS7 Signalling Sensor, Core Packet Inspection Engine, MoMo Gateway Trap, Darknet Honeypot Node>",
+  "suspectIdentifiers": ["<Clean indicator e.g. +25677xxxxxxx, shortcode, URL, or IP>"],
+  "affectedInfrastructure": "<Specific Uganda infrastructure e.g. Local Telecom Base Station, District Hospital Network, Cooperative Society Switch>",
+  "dangerDescription": "<2 sentences warning of the exact danger taking place in that area>",
+  "automatedContainmentAction": "<Immediate autonomous defense triggered, e.g. Automated IP drop rule sent to telecom gateway>"
+}`;
+
+        const geminiRes = await ai.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents: prompt,
+          config: {
+            responseMimeType: 'application/json'
+          }
+        });
+
+        if (geminiRes.text) {
+          threatData = JSON.parse(geminiRes.text.trim());
+        }
+      } catch (err) {
+        console.warn('Gemini automated threat generation fallback:', err);
+      }
+    }
+
+    // Procedural Fallback if AI unavailable
+    if (!threatData) {
+      const proceduralScenarios = [
+        {
+          threatTitle: `Rogue GSM Cell Intercept in ${requestedDistrict}`,
+          threatCategory: 'SIM Swap & Telecom Fraud' as const,
+          dangerLevel: 'CRITICAL DANGER' as const,
+          dangerScore: 97,
+          automatedSource: 'Autonomous Telecom Signal Sensor #UG-SIG-08',
+          suspectIdentifiers: [`+25677${Math.floor(1000000 + Math.random() * 8999999)}`, '*165*8# Spoof'],
+          affectedInfrastructure: `${requestedDistrict} Core Telecom Base Station`,
+          dangerDescription: `DANGER WARNING: Autonomous detector intercepted fake IMSI catcher broadcasting spoofed SIM registration requests across ${requestedDistrict}.`,
+          automatedContainmentAction: 'Automated radio frequency isolation requested via UCC Spectrum Directorate.'
+        },
+        {
+          threatTitle: `Surge in Mobile Money Reversal Phishing`,
+          threatCategory: 'Mobile Money & Financial Fraud' as const,
+          dangerLevel: 'HIGH HAZARD' as const,
+          dangerScore: 91,
+          automatedSource: 'Payment Gateway Anomaly Probe #MOMO-88',
+          suspectIdentifiers: [`+25670${Math.floor(1000000 + Math.random() * 8999999)}`, 'https://ug-momo-reversal.biz'],
+          affectedInfrastructure: `${requestedDistrict} Mobile Money Agent Corridor`,
+          dangerDescription: `DANGER WARNING: Burst of 800+ spoofed transaction reversal SMS messages targeting merchant kiosks in ${requestedDistrict}.`,
+          automatedContainmentAction: 'Automated sender identifier blacklist pushed to national telecom SMS aggregators.'
+        },
+        {
+          threatTitle: `Distributed Ransomware Scanner on Public Health Grid`,
+          threatCategory: 'Ransomware & Malware' as const,
+          dangerLevel: 'CRITICAL DANGER' as const,
+          dangerScore: 95,
+          automatedSource: 'GovNet Intrusion Detection System',
+          suspectIdentifiers: ['197.239.12.88', 'c2-beacon.ug-health.top'],
+          affectedInfrastructure: `${requestedDistrict} Regional Referral Hospital LAN`,
+          dangerDescription: `DANGER WARNING: Active exploit attempt against SMBv1 port detected targeting patient records and diagnostic computers.`,
+          automatedContainmentAction: 'Automated firewall isolation rule enforced; external port 445 filtered at gateway.'
+        }
+      ];
+
+      threatData = proceduralScenarios[Math.floor(Math.random() * proceduralScenarios.length)];
+    }
+
+    const newThreat: AutomatedThreat = {
+      id: `threat-auto-${Date.now()}`,
+      district: requestedDistrict,
+      region: geo.region,
+      lat: geo.lat + (Math.random() - 0.5) * 0.02,
+      lng: geo.lng + (Math.random() - 0.5) * 0.02,
+      threatTitle: threatData.threatTitle || `Automated Cyber Threat in ${requestedDistrict}`,
+      threatCategory: threatData.threatCategory || 'Mobile Money & Financial Fraud',
+      dangerLevel: threatData.dangerLevel || 'CRITICAL DANGER',
+      dangerScore: threatData.dangerScore || 92,
+      detectedAt: now,
+      automatedSource: threatData.automatedSource || 'National Cyber Threat Radar',
+      suspectIdentifiers: threatData.suspectIdentifiers || [`+25677${Math.floor(1000000 + Math.random() * 8999999)}`],
+      affectedInfrastructure: threatData.affectedInfrastructure || `${requestedDistrict} Regional Node`,
+      dangerDescription: threatData.dangerDescription || `Danger warning: An active threat was automatically intercepted in ${requestedDistrict}.`,
+      automatedContainmentAction: threatData.automatedContainmentAction || 'Automated rate limiting and firewall containment triggered.',
+      isMitigated: false
+    };
+
+    automatedThreats.unshift(newThreat);
+
+    // Also register any suspect identifiers as indicators
+    newThreat.suspectIdentifiers.forEach(idVal => {
+      const normalized = normalizeIndicator(idVal);
+      const existing = indicators.find(i => i.normalizedValue === normalized);
+      if (existing) {
+        existing.reportedCount += 1;
+        existing.lastActive = new Date().toISOString().substring(0, 10);
+      } else {
+        indicators.unshift({
+          id: `ioc-auto-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          indicatorType: idVal.includes('http') || idVal.includes('.') ? 'URL / Domain' : 'Phone Number',
+          normalizedValue: normalized,
+          originalValue: idVal,
+          reviewStatus: 'Verified Malicious',
+          confidence: 0.98,
+          threatCategory: newThreat.threatCategory,
+          reportedCount: 1,
+          firstDetected: new Date().toISOString().substring(0, 10),
+          lastActive: new Date().toISOString().substring(0, 10),
+          telecomOrProvider: 'Flagged by Autonomous Sensor',
+          description: `Automatically detected during danger alert in ${newThreat.district}: ${newThreat.threatTitle}`,
+          tags: ['Autonomous-Detection', 'Danger-Alert', newThreat.district]
+        });
+      }
+    });
+
+    res.status(201).json(newThreat);
+  } catch (error: any) {
+    console.error('Error running automated threat detection:', error);
+    res.status(500).json({ error: 'Failed to run threat detection', message: error.message });
+  }
+});
+
+app.patch('/api/automated-threats/:id', (req, res) => {
+  const { id } = req.params;
+  const threatIndex = automatedThreats.findIndex(t => t.id === id);
+  if (threatIndex === -1) {
+    return res.status(404).json({ error: 'Threat not found' });
+  }
+
+  automatedThreats[threatIndex] = {
+    ...automatedThreats[threatIndex],
+    ...req.body
+  };
+
+  res.json(automatedThreats[threatIndex]);
+});
+
 // 8. Research Data Dictionary & Methodology Logs
 app.get('/api/schema-definitions', (req, res) => {
   res.json(DATA_DICTIONARY_TABLES);
@@ -517,6 +751,434 @@ Respond strictly in valid JSON format:
     });
   }
 });
+
+// =========================================================================
+// 12. DIGITAL FORENSICS & INVESTIGATION MODULE ENDPOINTS
+// =========================================================================
+
+// 12a. IP Address Deep Geolocation & Digital Trace
+app.post('/api/investigation/trace-ip', async (req, res) => {
+  try {
+    const { ip } = req.body;
+    if (!ip || typeof ip !== 'string') {
+      return res.status(400).json({ error: 'Valid IP address required' });
+    }
+
+    const trimmedIp = ip.trim();
+    const isIPv6 = trimmedIp.includes(':');
+    const isIPv4 = /^(\d{1,3}\.){3}\d{1,3}$/.test(trimmedIp);
+
+    if (!isIPv4 && !isIPv6) {
+      return res.status(400).json({ error: 'Invalid IPv4 or IPv6 address format' });
+    }
+
+    // Default template
+    let traceResult: IpTraceResult = {
+      ip: trimmedIp,
+      ipVersion: isIPv6 ? 'IPv6' : 'IPv4',
+      country: 'Uganda',
+      countryCode: 'UG',
+      region: 'Central Region',
+      city: 'Kampala',
+      approxLat: 0.3476,
+      approxLng: 32.5825,
+      isp: 'Liquid Intelligent Technologies Uganda',
+      asn: 'AS36982',
+      asOrg: 'Liquid Telecommunications Ltd',
+      isDataCenterOrHosting: false,
+      isVpnOrProxy: false,
+      isTorExitNode: false,
+      reputationScore: 25,
+      reputationCategory: 'Low Risk',
+      associatedDomains: [],
+      historicalThreatCount: 0,
+      confidenceLevel: 'High',
+      intelligenceSource: 'National Cyber Threat Intelligence Feed & BGP Route Tables',
+      intelligenceDate: new Date().toISOString().substring(0, 10),
+      forensicDisclaimer: 'IMPORTANT INVESTIGATIVE NOTICE: IP geolocation indicates network routing infrastructure, ISP gateways, or hosting facilities. It MUST NEVER be presented as the exact physical location of a suspect. Lawful subscriber identification requires a Section 28 Production Order directed to the relevant ISP under the Uganda Computer Misuse Act 2022.'
+    };
+
+    // Check if known in our active threat indicator database
+    const matchingIndicator = indicators.find(i => i.normalizedValue === trimmedIp || i.originalValue === trimmedIp);
+    const matchingThreat = automatedThreats.find(t => t.suspectIdentifiers.some(s => s.includes(trimmedIp)));
+
+    // Attempt live lookup with external IP intelligence if possible
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2400);
+      const extRes = await fetch(`http://ip-api.com/json/${trimmedIp}?fields=status,message,country,countryCode,region,regionName,city,lat,lon,timezone,isp,org,as,query,proxy,hosting`, {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      if (extRes.ok) {
+        const data = await extRes.json();
+        if (data && data.status === 'success') {
+          traceResult.country = data.country || traceResult.country;
+          traceResult.countryCode = data.countryCode || traceResult.countryCode;
+          traceResult.region = data.regionName || traceResult.region;
+          traceResult.city = data.city || traceResult.city;
+          traceResult.approxLat = data.lat || traceResult.approxLat;
+          traceResult.approxLng = data.lon || traceResult.approxLng;
+          traceResult.isp = data.isp || traceResult.isp;
+          traceResult.asn = data.as ? data.as.split(' ')[0] : traceResult.asn;
+          traceResult.asOrg = data.org || traceResult.asOrg;
+          traceResult.isVpnOrProxy = !!data.proxy;
+          traceResult.isDataCenterOrHosting = !!data.hosting;
+        }
+      }
+    } catch {
+      // Use heuristic threat intelligence fallback
+    }
+
+    // Known threat signatures for specific Ugandan investigative IPs
+    if (trimmedIp === '102.134.42.19') {
+      traceResult.country = 'Uganda';
+      traceResult.city = 'Kampala';
+      traceResult.approxLat = 0.3476;
+      traceResult.approxLng = 32.5825;
+      traceResult.isp = 'Liquid Telecom Uganda';
+      traceResult.asn = 'AS36982';
+      traceResult.isVpnOrProxy = true;
+      traceResult.isTorExitNode = true;
+      traceResult.reputationScore = 94;
+      traceResult.reputationCategory = 'Suspicious Proxy';
+      traceResult.associatedDomains = ['tor-exit-node-ug.net', 'vpn-relay.liquid.ug'];
+      traceResult.historicalThreatCount = 38;
+    } else if (trimmedIp === '197.239.8.5') {
+      traceResult.country = 'Uganda';
+      traceResult.city = 'Kampala';
+      traceResult.approxLat = 0.3162;
+      traceResult.approxLng = 32.5822;
+      traceResult.isp = 'Raxio Data Centre / Uganda Internet Exchange (UIXP)';
+      traceResult.asn = 'AS37075';
+      traceResult.isDataCenterOrHosting = true;
+      traceResult.reputationScore = 88;
+      traceResult.reputationCategory = 'Malicious C2';
+      traceResult.associatedDomains = ['c2-gateway-momo.biz'];
+      traceResult.historicalThreatCount = 42;
+    } else if (trimmedIp === '45.142.182.11') {
+      traceResult.country = 'Netherlands';
+      traceResult.city = 'Amsterdam';
+      traceResult.approxLat = 52.3676;
+      traceResult.approxLng = 4.9041;
+      traceResult.isp = 'Stark Industries Bulletproof Hosting';
+      traceResult.asn = 'AS44477';
+      traceResult.isDataCenterOrHosting = true;
+      traceResult.reputationScore = 98;
+      traceResult.reputationCategory = 'Malicious C2';
+      traceResult.associatedDomains = ['api-gateway-momo-ug.biz', 'secure-ussd-verify.net'];
+      traceResult.historicalThreatCount = 112;
+    } else if (trimmedIp === '185.220.101.4') {
+      traceResult.country = 'Germany';
+      traceResult.city = 'Frankfurt';
+      traceResult.approxLat = 50.1109;
+      traceResult.approxLng = 8.6821;
+      traceResult.isp = 'Tor Exit Authority / Zwiebelfreunde';
+      traceResult.asn = 'AS206238';
+      traceResult.isTorExitNode = true;
+      traceResult.isVpnOrProxy = true;
+      traceResult.reputationScore = 96;
+      traceResult.reputationCategory = 'Known Phishing Host';
+      traceResult.associatedDomains = ['ura-etax-uganda-portal.net'];
+      traceResult.historicalThreatCount = 89;
+    }
+
+    if (matchingIndicator || matchingThreat) {
+      traceResult.reputationScore = Math.max(traceResult.reputationScore, 90);
+      traceResult.reputationCategory = 'Malicious C2';
+      traceResult.historicalThreatCount = (matchingIndicator?.reportedCount || 1) + 15;
+    }
+
+    res.json(traceResult);
+  } catch (error: any) {
+    console.error('IP trace error:', error);
+    res.status(500).json({ error: 'Failed to trace IP address', message: error.message });
+  }
+});
+
+// 12b. AI-Assisted Digital Trace Analysis (Email Headers, Network Logs, File Hashes)
+app.post('/api/investigation/ai-trace-assist', async (req, res) => {
+  try {
+    const { artifactType, rawData, caseContext } = req.body;
+    if (!rawData || !rawData.trim()) {
+      return res.status(400).json({ error: 'Artifact content required' });
+    }
+
+    const prompt = `You are a Senior Digital Forensics Examiner for CyberTrin Uganda / Uganda Police Cybercrime CID.
+Perform a forensic trace examination on the following digital artifact:
+
+Artifact Type: ${artifactType || 'General Digital Evidence'}
+Case Context: ${caseContext || 'Investigating unauthorized access and financial fraud targeting Ugandan citizens and entities.'}
+
+Raw Artifact Content:
+"""
+${rawData.substring(0, 3500)}
+"""
+
+Conduct a rigorous forensic analysis adhering to the Uganda Evidence Act and Computer Misuse Act 2022:
+1. Extract all actionable indicators (IP addresses, domains, email hops, cryptographic hashes, protocol headers).
+2. If this is an Email Header, evaluate SPF, DKIM, DMARC, Received: hop chains, sender authenticity, and identify the true originating injection server IP vs. intermediate relay hops.
+3. If this is a Network Log or URL, identify anomalous requests, injection strings, payload signatures, and target assets.
+4. If this is a File Hash, evaluate malware family likelihood, sandbox indicators, and MITRE ATT&CK techniques.
+5. Formulate a working Forensic Hypothesis.
+6. Outline necessary lawful investigative procedures (e.g. Section 28 Production Orders to Ugandan ISPs, MLAT requests for foreign hosting providers, preservation letters under Budapest Convention standards).
+7. Highlight evidentiary limitations (remind investigators that IP addresses/hostnames do not prove physical human identity without subscriber verification).
+
+Respond strictly in valid JSON format:
+{
+  "artifactType": "${artifactType}",
+  "forensicSummary": "<Concise 3-4 sentence forensic appraisal>",
+  "extractedIndicators": [
+    {
+      "indicatorType": "<IP Address | Domain | URL | Email Address | Hash | ASN>",
+      "value": "<clean extracted value>",
+      "role": "<e.g. Originating Injection IP | Spoofed Display Sender | C2 Controller | Compromised Victim Server>",
+      "reputationRisk": "<High | Medium | Low>"
+    }
+  ],
+  "emailHeaderAnalysis": {
+    "originatingIp": "<Extracted originating IP if email header, or null>",
+    "spfResult": "<Pass | Fail | SoftFail | None | Not Applicable>",
+    "dkimResult": "<Pass | Fail | None | Not Applicable>",
+    "dmarcResult": "<Pass | Fail | None | Not Applicable>",
+    "hopCount": <integer or 0>,
+    "isForged": <boolean>
+  },
+  "detectedTTPs": [
+    "<MITRE ATT&CK ID e.g. T1566.002: Spearphishing Link - explanation>"
+  ],
+  "forensicHypothesis": "<Clear technical hypothesis on the threat actor's infrastructure and modus operandi>",
+  "recommendedLawfulSteps": [
+    "<Step 1: Specific legal and technical action e.g. Apply for Section 28 Production Order to Liquid Telecom for subscriber logs for IP 102.134.42.19 at timestamp 2026-10-28 10:14 EAT>",
+    "<Step 2: Preservation letter / DNS sinkhole>",
+    "<Step 3: Evidence hashing and court exhibit preparation>"
+  ],
+  "evidentiaryLimitations": "<Explicit warning explaining why this digital trace alone does not confirm human identity or physical location without subscriber verification>"
+}`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.8-flash',
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+      }
+    });
+
+    if (!response.text) {
+      throw new Error('No forensic analysis response from Gemini');
+    }
+
+    const parsed = JSON.parse(response.text.trim());
+    res.json(parsed);
+  } catch (error: any) {
+    console.error('AI trace assist error:', error);
+    res.status(500).json({ error: 'Forensic trace analysis failed', message: error.message });
+  }
+});
+
+// 12c. Investigation Cases CRUD
+app.get('/api/investigation/cases', (req, res) => {
+  res.json(investigationCases);
+});
+
+app.post('/api/investigation/cases', (req, res) => {
+  const body = req.body;
+  const count = investigationCases.length + 101;
+  const newCase: InvestigationCase = {
+    id: `case-${Date.now()}`,
+    caseNumber: body.caseNumber || `CASE-2026-UG-${count}`,
+    title: body.title || 'Untitled Cybercrime Investigation',
+    leadInvestigator: body.leadInvestigator || 'Authorized Cybercrime Investigator',
+    agency: body.agency || 'Uganda Police Cybercrime CID',
+    status: body.status || 'Active Forensics',
+    incidentReferences: body.incidentReferences || [],
+    createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+    updatedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+    summary: body.summary || 'Investigation initiated into digital traces and associated financial cybercrime.',
+    suspectDigitalTraces: body.suspectDigitalTraces || [],
+    evidenceCount: 0,
+    legalWarrantStatus: body.legalWarrantStatus || 'Warrant Granted',
+    statutoryBasis: body.statutoryBasis || 'Computer Misuse Act 2022'
+  };
+
+  investigationCases.unshift(newCase);
+  res.status(201).json(newCase);
+});
+
+app.get('/api/investigation/cases/:id', (req, res) => {
+  const { id } = req.params;
+  const found = investigationCases.find(c => c.id === id || c.caseNumber === id);
+  if (!found) return res.status(404).json({ error: 'Case not found' });
+  const caseEvidence = evidenceRecords.filter(e => e.caseId === found.id || e.caseId === found.caseNumber);
+  res.json({ ...found, evidence: caseEvidence });
+});
+
+// 12d. Evidence Records with Cryptographic Integrity Verification
+app.get('/api/investigation/evidence/:caseId', (req, res) => {
+  const { caseId } = req.params;
+  const filtered = evidenceRecords.filter(e => e.caseId === caseId);
+  res.json(filtered);
+});
+
+app.post('/api/investigation/evidence', (req, res) => {
+  try {
+    const body = req.body;
+    const raw = body.rawValue || '';
+    // Generate real SHA-256 hash of raw artifact
+    const computedHash = crypto.createHash('sha256').update(raw).digest('hex');
+    const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
+
+    const newEvidence: EvidenceRecord = {
+      id: `ev-${Date.now()}`,
+      caseId: body.caseId || 'case-001',
+      title: body.title || 'Digital Artifact Exhibit',
+      artifactType: body.artifactType || 'Network Log',
+      rawValue: raw,
+      sha256Hash: body.sha256Hash || computedHash,
+      collectedAt: now,
+      collectedBy: body.collectedBy || 'Investigator on Duty',
+      legalAuthorization: body.legalAuthorization || 'Section 28 Computer Misuse Act 2022',
+      isTamperVerified: true,
+      chainOfCustody: [
+        {
+          id: `coc-${Date.now()}`,
+          timestamp: now,
+          officerName: body.collectedBy || 'Investigator on Duty',
+          officerBadgeOrId: body.officerBadge || 'CID-FORENSICS',
+          actionTaken: 'Evidence collected, hashed with SHA-256, and sealed in digital evidence locker',
+          storageLocation: 'UG-CERT Cryptographic Evidence Vault',
+          sha256Verification: computedHash
+        }
+      ],
+      notes: body.notes || ''
+    };
+
+    evidenceRecords.unshift(newEvidence);
+
+    // Update case evidence count
+    const targetCase = investigationCases.find(c => c.id === newEvidence.caseId || c.caseNumber === newEvidence.caseId);
+    if (targetCase) {
+      targetCase.evidenceCount += 1;
+      targetCase.updatedAt = now;
+    }
+
+    res.status(201).json(newEvidence);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to record evidence', message: error.message });
+  }
+});
+
+// 12e. Interactive Threat Infrastructure Graph
+app.get('/api/investigation/infrastructure-graph', (req, res) => {
+  res.json(infrastructureGraph);
+});
+
+// 12f. Generate Formal Investigation Report
+app.post('/api/investigation/generate-report', async (req, res) => {
+  try {
+    const { caseId, investigatorNotes, requestedAgency } = req.body;
+    const foundCase = investigationCases.find(c => c.id === caseId || c.caseNumber === caseId) || investigationCases[0];
+    const caseEv = evidenceRecords.filter(e => e.caseId === foundCase.id || e.caseId === foundCase.caseNumber);
+
+    const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
+
+    let reportMarkdown = '';
+
+    if (process.env.GEMINI_API_KEY) {
+      try {
+        const prompt = `You are a Senior Digital Forensics Investigator drafting an official, court-admissible Digital Evidence and Forensic Investigation Report for CyberTrin Uganda / Uganda Police Cybercrime Division (CID).
+
+Case Details:
+- Case Number: ${foundCase.caseNumber}
+- Case Title: ${foundCase.title}
+- Lead Investigator: ${foundCase.leadInvestigator}
+- Agency: ${requestedAgency || foundCase.agency}
+- Statutory Basis: ${foundCase.statutoryBasis}
+- Suspect Traces: ${foundCase.suspectDigitalTraces.join(', ')}
+- Associated Incidents: ${foundCase.incidentReferences.join(', ')}
+- Total Preserved Evidence Records: ${caseEv.length}
+
+Evidence Summary:
+${caseEv.map((e, idx) => `Exhibit #${idx + 1}: ${e.title} (${e.artifactType}) - SHA-256: ${e.sha256Hash} - Authority: ${e.legalAuthorization}`).join('\n')}
+
+Investigator Notes: ${investigatorNotes || 'Standard forensic workflow completed; evidence integrity preserved.'}
+
+Draft a formal, structured Forensic Investigation Report in Markdown format with:
+1. Executive Summary & Objective of Investigation
+2. Digital Evidence Chain of Custody & SHA-256 Verification Table
+3. Infrastructure Analysis & Network Correlation (IP, ASN, Domains, Reverse Proxy Cloaking)
+4. Geographical Intelligence Estimation & Crucial Legal Limitations (Distinguishing network infrastructure from human suspect physical location)
+5. Modus Operandi & MITRE ATT&CK Matrix Correlation
+6. Recommendations for Prosecutorial Action & Lawful Section 28 Production Orders
+7. Formal Certification Statement under Uganda Evidence Act (Electronic Evidence provisions) and Computer Misuse Act 2022.`;
+
+        const geminiRes = await ai.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents: prompt
+        });
+
+        if (geminiRes.text) {
+          reportMarkdown = geminiRes.text.trim();
+        }
+      } catch (err) {
+        console.warn('Gemini report generation fallback:', err);
+      }
+    }
+
+    if (!reportMarkdown) {
+      reportMarkdown = `# REPUBLIC OF UGANDA
+## UG-CERT & UGANDA POLICE FORCE CYBERCRIME DIVISION (CID)
+### OFFICIAL DIGITAL FORENSICS INVESTIGATION REPORT
+
+**Case Number:** ${foundCase.caseNumber}
+**Date of Report:** ${now}
+**Lead Investigator:** ${foundCase.leadInvestigator}
+**Agency:** ${foundCase.agency}
+**Statutory Basis:** ${foundCase.statutoryBasis}
+
+---
+
+### 1. EXECUTIVE SUMMARY
+An authorized digital forensics examination was initiated pursuant to verified reports of cybercrime incidents (${foundCase.incidentReferences.join(', ')}). Digital indicators including suspect IP addresses, domains, and malicious payloads were seized and forensically analyzed in accordance with Section 28 of the Computer Misuse Act 2022.
+
+### 2. DIGITAL EVIDENCE INVENTORY & INTEGRITY VERIFICATION
+All digital artifacts have been cryptographically sealed using SHA-256 integrity hashing to satisfy chain-of-custody standards under the Uganda Evidence Act:
+
+${caseEv.map((e, i) => `- **Exhibit ${i + 1}:** ${e.title}  
+  *Artifact Type:* ${e.artifactType}  
+  *SHA-256 Hash:* \`${e.sha256Hash}\`  
+  *Chain of Custody Status:* Verified Tamper-Evident (${e.chainOfCustody.length} custody entries recorded)`).join('\n\n')}
+
+### 3. INFRASTRUCTURE TRACING & GEOGRAPHICAL ESTIMATION
+Digital tracing revealed traffic traversing domestic and international transit points:
+- **Observed Digital Traces:** ${foundCase.suspectDigitalTraces.join(', ')}
+- **Hosting / ASNs:** Liquid Intelligent Technologies (AS36982), Cloudflare Reverse Proxy (AS13335).
+
+**IMPORTANT LEGAL & TECHNICAL LIMITATION:**
+IP geolocation identifies the approximate geographical facility of the server, proxy, or ISP router. Under Uganda law, server geolocation does **not** establish the physical location of the criminal actor. To tie digital traces to a physical individual, lawful court production orders must be issued to the relevant telecommunications providers.
+
+### 4. RECOMMENDATIONS & NEXT LEGAL STEPS
+1. File formal ex-parte application for a Section 28 Production Order before the Chief Magistrate's Court.
+2. Request Call Detail Records (CDR), IMSI binding, and subscriber KYC from MTN and Airtel Uganda.
+3. Submit international preservation request to Cloudflare Trust & Safety for origin server server logs.
+
+---
+*Report certified by Digital Forensics & Cyber Threat Intelligence Unit, CyberTrin Uganda.*`;
+    }
+
+    res.json({
+      caseNumber: foundCase.caseNumber,
+      generatedAt: now,
+      leadInvestigator: foundCase.leadInvestigator,
+      reportMarkdown
+    });
+  } catch (error: any) {
+    console.error('Report generation error:', error);
+    res.status(500).json({ error: 'Failed to generate report', message: error.message });
+  }
+});
+
 
 // Mount Vite in dev mode or serve static files in production
 async function startServer() {

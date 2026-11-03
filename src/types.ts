@@ -127,3 +127,156 @@ export interface MethodologyPhase {
   status: 'Completed' | 'In Progress' | 'Planned';
   completionDate?: string;
 }
+
+export type CyberWorkStatus = 'Active Defense' | 'Interception Underway' | 'Telemetry Scan' | 'Incident Containment';
+
+export interface LiveCyberWork {
+  id: string;
+  operationName: string;
+  district: string;
+  lat: number;
+  lng: number;
+  status: CyberWorkStatus;
+  workCategory: 'Packet Scrubbing' | 'Telecom Fraud Sinkhole' | 'GovNet Honeypot' | 'Digital Forensics Unit' | 'Critical Infrastructure Shield';
+  leadAgency: string;
+  personnelCount: number;
+  metrics: string;
+  activeTools: string[];
+  description: string;
+  lastUpdate: string;
+}
+
+export type DangerLevel = 'CRITICAL DANGER' | 'HIGH HAZARD' | 'SEVERE ALERT';
+
+export interface AutomatedThreat {
+  id: string;
+  district: string;
+  region: 'Central' | 'Eastern' | 'Western' | 'Northern';
+  lat: number;
+  lng: number;
+  threatTitle: string;
+  threatCategory: IncidentCategory;
+  dangerLevel: DangerLevel;
+  dangerScore: number; // 1 - 100
+  detectedAt: string;
+  automatedSource: string;
+  suspectIdentifiers: string[];
+  affectedInfrastructure: string;
+  dangerDescription: string;
+  automatedContainmentAction: string;
+  isMitigated: boolean;
+  alertDismissed?: boolean;
+}
+
+// DIGITAL FORENSICS & INVESTIGATION MODULE TYPES
+
+export type DigitalArtifactType = 
+  | 'IP Address' 
+  | 'Domain' 
+  | 'URL' 
+  | 'Email Header' 
+  | 'File Hash' 
+  | 'Network Log' 
+  | 'DNS Record' 
+  | 'WHOIS Entry';
+
+export interface IpTraceResult {
+  ip: string;
+  ipVersion: 'IPv4' | 'IPv6';
+  country: string;
+  countryCode: string;
+  region: string;
+  city: string;
+  approxLat: number;
+  approxLng: number;
+  isp: string;
+  asn: string;
+  asOrg: string;
+  isDataCenterOrHosting: boolean;
+  isVpnOrProxy: boolean;
+  isTorExitNode: boolean;
+  reputationScore: number; // 0 - 100
+  reputationCategory: 'Malicious C2' | 'Known Phishing Host' | 'Suspicious Proxy' | 'Low Risk' | 'Clean';
+  associatedDomains: string[];
+  historicalThreatCount: number;
+  confidenceLevel: 'High' | 'Medium' | 'Low';
+  intelligenceSource: string;
+  intelligenceDate: string;
+  forensicDisclaimer: string;
+}
+
+export interface ChainOfCustodyEntry {
+  id: string;
+  timestamp: string;
+  officerName: string;
+  officerBadgeOrId: string;
+  actionTaken: string;
+  storageLocation: string;
+  sha256Verification: string;
+}
+
+export interface EvidenceRecord {
+  id: string;
+  caseId: string;
+  title: string;
+  artifactType: DigitalArtifactType;
+  rawValue: string;
+  sha256Hash: string;
+  collectedAt: string;
+  collectedBy: string;
+  legalAuthorization: string;
+  isTamperVerified: boolean;
+  chainOfCustody: ChainOfCustodyEntry[];
+  notes?: string;
+}
+
+export interface InvestigationCase {
+  id: string;
+  caseNumber: string; // e.g. CASE-2026-UG-0419
+  title: string;
+  leadInvestigator: string;
+  agency: 'Uganda Police Cybercrime CID' | 'UG-CERT / NITA-U' | 'Bank of Uganda Forensics' | 'Joint Inter-Agency Taskforce';
+  status: 'Open' | 'Active Forensics' | 'Subpoena Pending' | 'Referred to Court' | 'Closed';
+  incidentReferences: string[];
+  createdAt: string;
+  updatedAt: string;
+  summary: string;
+  suspectDigitalTraces: string[];
+  evidenceCount: number;
+  legalWarrantStatus: 'Warrant Granted' | 'Production Order Pending' | 'Consent Based' | 'Not Required';
+  statutoryBasis: string; // e.g. "Section 28 Computer Misuse Act 2022"
+}
+
+export type InfrastructureNodeType = 
+  | 'IP' 
+  | 'Domain' 
+  | 'Hosting / ASN' 
+  | 'Malware Hash' 
+  | 'Victim Account' 
+  | 'Threat Actor' 
+  | 'Incident';
+
+export interface InfrastructureNode {
+  id: string;
+  label: string;
+  nodeType: InfrastructureNodeType;
+  details?: string;
+  country?: string;
+  reputation?: string;
+  isMalicious?: boolean;
+}
+
+export interface InfrastructureLink {
+  source: string;
+  target: string;
+  relationshipType: 'Hosted On' | 'DNS Resolves To' | 'Shared Certificate' | 'Observed In Incident' | 'Exfiltration Channel' | 'Suspected C2';
+  isConfirmed: boolean; // confirmed vs suspected
+  confidence: number; // 0 - 100
+  notes?: string;
+}
+
+export interface ThreatInfrastructureGraph {
+  nodes: InfrastructureNode[];
+  links: InfrastructureLink[];
+}
+

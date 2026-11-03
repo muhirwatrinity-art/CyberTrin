@@ -10,7 +10,8 @@ import {
   Phone, 
   ExternalLink,
   MapPin,
-  Briefcase
+  Briefcase,
+  Fingerprint
 } from 'lucide-react';
 import { UgandaFlag } from './UgandaFlag.tsx';
 
@@ -20,6 +21,7 @@ export type ActiveTab =
   | 'workbench' 
   | 'maps'
   | 'workspace'
+  | 'investigation'
   | 'advisories' 
   | 'analytics' 
   | 'research';
@@ -33,6 +35,7 @@ interface NavbarProps {
   setUserRole: (role: UserRole) => void;
   onOpenScanner: () => void;
   pendingTriageCount: number;
+  activeDangerCount?: number;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -41,7 +44,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   userRole,
   setUserRole,
   onOpenScanner,
-  pendingTriageCount
+  pendingTriageCount,
+  activeDangerCount = 0
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-slate-800 text-slate-100">
@@ -189,7 +193,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <button
               onClick={() => setActiveTab('maps')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition ${
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition relative ${
                 activeTab === 'maps'
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-950'
                   : 'text-slate-300 hover:bg-slate-900 hover:text-white'
@@ -197,6 +201,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <MapPin className="w-4 h-4 text-emerald-400" />
               <span>Incident Map</span>
+              {activeDangerCount > 0 && (
+                <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-black animate-pulse shadow-sm shadow-red-950">
+                  <span>⚠️</span>
+                  <span>{activeDangerCount}</span>
+                </span>
+              )}
             </button>
 
             <button
@@ -209,6 +219,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <Briefcase className="w-4 h-4 text-cyan-400" />
               <span>Workspace Suite</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('investigation')}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition ${
+                activeTab === 'investigation'
+                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-950'
+                  : 'text-slate-300 hover:bg-slate-900 hover:text-white'
+              }`}
+            >
+              <Fingerprint className="w-4 h-4 text-indigo-400" />
+              <span>Digital Tracing</span>
             </button>
 
             <button
@@ -285,15 +307,26 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('maps')}
-            className={`px-3 py-1.5 rounded-lg shrink-0 ${activeTab === 'maps' ? 'bg-blue-600 text-white font-bold' : 'text-slate-300'}`}
+            className={`px-3 py-1.5 rounded-lg shrink-0 flex items-center gap-1 ${activeTab === 'maps' ? 'bg-blue-600 text-white font-bold' : 'text-slate-300'}`}
           >
-            Map
+            <span>Map</span>
+            {activeDangerCount > 0 && (
+              <span className="px-1 py-0.2 rounded-full bg-red-600 text-white text-[9px] font-bold">
+                ⚠️{activeDangerCount}
+              </span>
+            )}
           </button>
           <button
             onClick={() => setActiveTab('workspace')}
             className={`px-3 py-1.5 rounded-lg shrink-0 ${activeTab === 'workspace' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-300'}`}
           >
             Workspace
+          </button>
+          <button
+            onClick={() => setActiveTab('investigation')}
+            className={`px-3 py-1.5 rounded-lg shrink-0 ${activeTab === 'investigation' ? 'bg-purple-600 text-white font-bold' : 'text-slate-300'}`}
+          >
+            Tracing & Forensics
           </button>
           <button
             onClick={() => setActiveTab('advisories')}

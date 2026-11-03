@@ -546,3 +546,320 @@ export const METHODOLOGY_LOG_PHASES: MethodologyPhase[] = [
     completionDate: '2026-11-03'
   }
 ];
+
+export const INITIAL_CYBER_WORKS: import('../types.ts').LiveCyberWork[] = [
+  {
+    id: 'work-001',
+    operationName: 'Operation Shield-Kampala: Deep Packet Inspection & USSD Scrubbing',
+    district: 'Kampala',
+    lat: 0.3476,
+    lng: 32.5825,
+    status: 'Active Defense',
+    workCategory: 'Packet Scrubbing',
+    leadAgency: 'UG-CERT / NITA-U Rapid SOC',
+    personnelCount: 8,
+    metrics: '14,800 rogue USSD queries dropped/min',
+    activeTools: ['Suricata IDS', 'Zeek Network Monitor', 'MTN/Airtel SS7 Signalling Filter'],
+    description: 'Active DPI scrubbing of spoofed mobile money USSD injection packets targeting central financial gateways and citizen bank accounts.',
+    lastUpdate: '2 mins ago'
+  },
+  {
+    id: 'work-002',
+    operationName: 'Operation Nile-Grid: Hydropower SCADA & Fiber Backbone Perimeter',
+    district: 'Jinja',
+    lat: 0.4428,
+    lng: 33.2032,
+    status: 'Active Defense',
+    workCategory: 'Critical Infrastructure Shield',
+    leadAgency: 'National Critical Infrastructure Protection Unit',
+    personnelCount: 6,
+    metrics: 'Zero SCADA intrusions; 100% telemetry verified',
+    activeTools: ['Industrial SCADA Firewall', 'Gemini Anomaly Correlator', 'OT Sentinel'],
+    description: 'Continuous cybersecurity surveillance and perimeter defense of the Nalubaale & Kiira hydropower electrical switches and eastern fiber backbone.',
+    lastUpdate: '5 mins ago'
+  },
+  {
+    id: 'work-003',
+    operationName: 'Operation Wakiso SIM-Freeze: Telecom Fraud Taskforce',
+    district: 'Wakiso',
+    lat: 0.4044,
+    lng: 32.4833,
+    status: 'Interception Underway',
+    workCategory: 'Telecom Fraud Sinkhole',
+    leadAgency: 'UCC Telecom Fraud Taskforce & Cyber Police',
+    personnelCount: 7,
+    metrics: '320 fraudulent SIM-swap requests quarantined',
+    activeTools: ['Automated SIM Quarantine Bot', 'Biometric Cross-Validator', 'CDR Real-Time Correlator'],
+    description: 'Live interdiction of coordinated SIM-swap attempts and unauthorized IMSI migrations targeting SACCO treasury accounts in Nansana and Kira.',
+    lastUpdate: '1 min ago'
+  },
+  {
+    id: 'work-004',
+    operationName: 'Operation Western-Forensics: Agribusiness Cooperative SOC',
+    district: 'Mbarara',
+    lat: -0.6072,
+    lng: 30.6545,
+    status: 'Incident Containment',
+    workCategory: 'Digital Forensics Unit',
+    leadAgency: 'Uganda Police Cybercrime CID',
+    personnelCount: 5,
+    metrics: '2 rogue GSM transceivers seized; 8 compromised laptops isolated',
+    activeTools: ['Autopsy Digital Forensics', 'Memory Harvester', 'Wireshark Packet Probe'],
+    description: 'Forensic extraction and containment following unauthorized API penetration of regional agribusiness cooperative.',
+    lastUpdate: '12 mins ago'
+  },
+  {
+    id: 'work-005',
+    operationName: 'Operation Northern-Sentry: GovNet Regional Honeynet',
+    district: 'Gulu',
+    lat: 2.7724,
+    lng: 32.2881,
+    status: 'Telemetry Scan',
+    workCategory: 'GovNet Honeypot',
+    leadAgency: 'NITA-U GovNet Regional Node',
+    personnelCount: 4,
+    metrics: '88 C2 beacon attempts lured into isolated honeynet',
+    activeTools: ['Cowrie SSH Decoy', 'Dionaea Malware Trap', 'Suricata Alert Stream'],
+    description: 'Deception honeypot nodes actively identifying brute-force IP ranges and ransomware command-and-control beacons across northern administrative districts.',
+    lastUpdate: '8 mins ago'
+  },
+  {
+    id: 'work-006',
+    operationName: 'Operation Masaka Merchant Shield: SACCO Intercept Grid',
+    district: 'Masaka',
+    lat: -0.3411,
+    lng: 31.7361,
+    status: 'Active Defense',
+    workCategory: 'Telecom Fraud Sinkhole',
+    leadAgency: 'Bank of Uganda Payment Systems Directorate',
+    personnelCount: 5,
+    metrics: 'UGX 145M in unauthorized reversal requests blocked',
+    activeTools: ['Fintech Real-Time Risk Engine', 'Merchant Fraud Guard', 'USSD Gateway Whitelist'],
+    description: 'Real-time transaction anomaly filtering protecting coffee agricultural merchants and mobile money agents from automated reversal exploits.',
+    lastUpdate: '4 mins ago'
+  }
+];
+
+export const INITIAL_AUTOMATED_THREATS: import('../types.ts').AutomatedThreat[] = [
+  {
+    id: 'threat-auto-001',
+    district: 'Wakiso',
+    region: 'Central',
+    lat: 0.4044,
+    lng: 32.4833,
+    threatTitle: 'Automated Rogue USSD & SIM-Swap Burst',
+    threatCategory: 'SIM Swap & Telecom Fraud',
+    dangerLevel: 'CRITICAL DANGER',
+    dangerScore: 96,
+    detectedAt: 'Just Now',
+    automatedSource: 'Autonomous Telecom SS7 Anomaly Sensor #WK-04',
+    suspectIdentifiers: ['+256772491820', '+256788192833', 'USSD *165*8#'],
+    affectedInfrastructure: 'Wakiso Base Transceiver Stations (BTS-209 & BTS-214)',
+    dangerDescription: 'DANGER WARNING: An abnormal spike of 1,420 unauthorized SIM replacement queries detected in under 3 minutes targeting MTN MoMo agent accounts in Nansana & Kira.',
+    automatedContainmentAction: 'Automated 1-hour freeze rule applied to SIM-swap gateway for flagged cluster; regional CERT dispatched.',
+    isMitigated: false
+  },
+  {
+    id: 'threat-auto-002',
+    district: 'Mukono',
+    region: 'Central',
+    lat: 0.3544,
+    lng: 32.7553,
+    threatTitle: 'Spoofed URA Tax Phishing SMS Burst',
+    threatCategory: 'Phishing & SMS Spoofing',
+    dangerLevel: 'HIGH HAZARD',
+    dangerScore: 89,
+    detectedAt: '8 mins ago',
+    automatedSource: 'Autonomous SMS Gateway Honeypot',
+    suspectIdentifiers: ['https://ura-etax-uganda-portal.net', 'SMS Sender: URA_NOTICE'],
+    affectedInfrastructure: 'Public SMS Aggregator SMPP Route',
+    dangerDescription: 'DANGER WARNING: Over 14,000 citizens in Mukono and Seeta receiving fake TIN refund notices harvesting banking credentials.',
+    automatedContainmentAction: 'Autonomous URL blacklisting sent to national DNS resolvers and telecom providers.',
+    isMitigated: false
+  },
+  {
+    id: 'threat-auto-003',
+    district: 'Kampala',
+    region: 'Central',
+    lat: 0.3476,
+    lng: 32.5825,
+    threatTitle: 'API Brute Force against SACCO Mobile Gateway',
+    threatCategory: 'Fake SACCO & Investment Scam',
+    dangerLevel: 'SEVERE ALERT',
+    dangerScore: 84,
+    detectedAt: '25 mins ago',
+    automatedSource: 'Bank of Uganda National Switch IDS',
+    suspectIdentifiers: ['102.134.42.19', '197.239.8.5'],
+    affectedInfrastructure: 'Inter-Bank Mobile Banking API Switch',
+    dangerDescription: 'DANGER WARNING: Coordinated distributed credential stuffing targeting credit union web portals in Kampala central business district.',
+    automatedContainmentAction: 'Rate limiting reduced to 3 attempts/min; suspicious ASN ranges firewalled.',
+    isMitigated: true
+  }
+];
+
+export const INITIAL_INVESTIGATION_CASES: import('../types.ts').InvestigationCase[] = [
+  {
+    id: 'case-001',
+    caseNumber: 'CASE-2026-UG-0104',
+    title: 'Operation Silver-Crane: Coordinated MoMo API Injection Ring',
+    leadInvestigator: 'Det. Inspector J. Okello (Badge #CID-8821)',
+    agency: 'Uganda Police Cybercrime CID',
+    status: 'Active Forensics',
+    incidentReferences: ['CGU-2026-1042', 'CGU-2026-1055'],
+    createdAt: '2026-10-28 09:30',
+    updatedAt: '2026-11-03 11:20',
+    summary: 'Forensic digital tracing of a distributed cyber syndicate exploiting spoofed USSD sessions and automated SIM-swap gateways against SACCO treasury accounts across Kampala and Wakiso.',
+    suspectDigitalTraces: ['102.134.42.19', '197.239.8.5', 'https://api-gateway-momo-ug.biz', '+256772491820'],
+    evidenceCount: 5,
+    legalWarrantStatus: 'Warrant Granted',
+    statutoryBasis: 'Section 14 (Unauthorized Access) & Section 28 (Production Orders), Computer Misuse Act 2022'
+  },
+  {
+    id: 'case-002',
+    caseNumber: 'CASE-2026-UG-0188',
+    title: 'Operation Nyuki: State Entity Lure & Tax Phishing Infrastructure',
+    leadInvestigator: 'Analyst S. Namubiru (UG-CERT Senior Forensic Lead)',
+    agency: 'UG-CERT / NITA-U',
+    status: 'Subpoena Pending',
+    incidentReferences: ['CGU-2026-1088', 'CGU-2026-1120'],
+    createdAt: '2026-10-30 14:15',
+    updatedAt: '2026-11-03 08:45',
+    summary: 'Infrastructure mapping of credential-harvesting domain ura-etax-uganda-portal.net masquerading as Uganda Revenue Authority, utilizing reverse-proxy routing through bulletproof European hosting.',
+    suspectDigitalTraces: ['185.220.101.4', 'https://ura-etax-uganda-portal.net', 'SMS Sender: URA_NOTICE', '45.142.182.11'],
+    evidenceCount: 4,
+    legalWarrantStatus: 'Production Order Pending',
+    statutoryBasis: 'Section 12 (Cyber Phishing) & Section 22 (Identity Theft), Computer Misuse Act 2022'
+  },
+  {
+    id: 'case-003',
+    caseNumber: 'CASE-2026-UG-0210',
+    title: 'Operation Jinja-Grid: Industrial SCADA Perimeter Probing',
+    leadInvestigator: 'Capt. R. Tumusiime (Critical Infrastructure Taskforce)',
+    agency: 'Joint Inter-Agency Taskforce',
+    status: 'Open',
+    incidentReferences: ['CGU-2026-1130'],
+    createdAt: '2026-11-01 11:00',
+    updatedAt: '2026-11-02 16:30',
+    summary: 'Deep packet inspection log analysis of automated vulnerability scanners targeting Modbus/DNP3 industrial telemetry at Nalubaale transmission substations.',
+    suspectDigitalTraces: ['194.26.29.112', 'c2-beacon.ug-health.top', '2a02:4780:8:11::1'],
+    evidenceCount: 3,
+    legalWarrantStatus: 'Consent Based',
+    statutoryBasis: 'Section 15 (Critical Information Infrastructure Protection), Computer Misuse Act 2022'
+  }
+];
+
+export const INITIAL_EVIDENCE_RECORDS: import('../types.ts').EvidenceRecord[] = [
+  {
+    id: 'ev-001',
+    caseId: 'case-001',
+    title: 'Packet Capture (PCAP) of USSD Gateway Brute-Force Session',
+    artifactType: 'Network Log',
+    rawValue: 'TCP/IP 102.134.42.19:443 -> 197.239.8.5:8080 (38,400 packets, USSD XML payload)',
+    sha256Hash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+    collectedAt: '2026-10-28 10:14',
+    collectedBy: 'Det. Inspector J. Okello',
+    legalAuthorization: 'Uganda High Court Warrant #HC-CRB-2026-112',
+    isTamperVerified: true,
+    chainOfCustody: [
+      {
+        id: 'coc-01',
+        timestamp: '2026-10-28 10:20',
+        officerName: 'Det. Inspector J. Okello',
+        officerBadgeOrId: 'CID-8821',
+        actionTaken: 'Initial network packet capture dumped from core router switch',
+        storageLocation: 'UG-CERT Air-Gapped Forensics Vault #04',
+        sha256Verification: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+      },
+      {
+        id: 'coc-02',
+        timestamp: '2026-10-28 14:00',
+        officerName: 'Analyst S. Namubiru',
+        officerBadgeOrId: 'CERT-042',
+        actionTaken: 'Cryptographic hash re-verified; read-only forensic image mounted for Wireshark inspection',
+        storageLocation: 'UG-CERT Secure Analysis Workstation Alpha',
+        sha256Verification: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+      }
+    ],
+    notes: 'Preserved under Section 28 Evidence Integrity Standards. Correlates to malicious IP 102.134.42.19.'
+  },
+  {
+    id: 'ev-002',
+    caseId: 'case-002',
+    title: 'Phishing Landing Page Source & SSL Certificate Fingerprint',
+    artifactType: 'URL',
+    rawValue: 'https://ura-etax-uganda-portal.net/login.php (Cert SHA-256: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08)',
+    sha256Hash: '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
+    collectedAt: '2026-10-30 14:35',
+    collectedBy: 'Analyst S. Namubiru',
+    legalAuthorization: 'Voluntary Victim Submission & Section 12 Computer Misuse Act Authorization',
+    isTamperVerified: true,
+    chainOfCustody: [
+      {
+        id: 'coc-03',
+        timestamp: '2026-10-30 14:40',
+        officerName: 'Analyst S. Namubiru',
+        officerBadgeOrId: 'CERT-042',
+        actionTaken: 'Crawl snapshot and raw HTTP response headers saved with SHA-256 hash',
+        storageLocation: 'UG-CERT Evidence Repository',
+        sha256Verification: '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'
+      }
+    ],
+    notes: 'Origin IP 185.220.101.4 identified behind Cloudflare reverse proxy via MX misconfiguration.'
+  },
+  {
+    id: 'ev-003',
+    caseId: 'case-001',
+    title: 'Extracted Android Trojan Payload: "MoMo_FastLoan_v2.apk"',
+    artifactType: 'File Hash',
+    rawValue: 'File: MoMo_FastLoan_v2.apk (Size: 4.8MB, SHA-256: a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e)',
+    sha256Hash: 'a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e',
+    collectedAt: '2026-10-29 11:22',
+    collectedBy: 'Det. Inspector J. Okello',
+    legalAuthorization: 'Forensic Seizure Order #SO-2026-081',
+    isTamperVerified: true,
+    chainOfCustody: [
+      {
+        id: 'coc-04',
+        timestamp: '2026-10-29 11:30',
+        officerName: 'Det. Inspector J. Okello',
+        officerBadgeOrId: 'CID-8821',
+        actionTaken: 'Device extraction from victim Samsung SM-A125F; isolated inside Faraday bag',
+        storageLocation: 'Uganda Police Forensics Lab Kibuli',
+        sha256Verification: 'a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e'
+      }
+    ],
+    notes: 'Decompilation reveals hardcoded C2 beacon contacting 45.142.182.11:9090.'
+  }
+];
+
+export const INITIAL_INFRASTRUCTURE_GRAPH: import('../types.ts').ThreatInfrastructureGraph = {
+  nodes: [
+    { id: 'actor-silver', label: 'Threat Syndicate "Silver-Crane"', nodeType: 'Threat Actor', details: 'Specialized in East African MoMo/USSD manipulation', isMalicious: true },
+    { id: 'ip-102', label: '102.134.42.19', nodeType: 'IP', details: 'Liquid Telecom Uganda / Tor Exit Node', country: 'Uganda', reputation: 'Tor Proxy / High Risk', isMalicious: true },
+    { id: 'ip-197', label: '197.239.8.5', nodeType: 'IP', details: 'Kampala VPS Gateway', country: 'Uganda', reputation: 'Command Proxy', isMalicious: true },
+    { id: 'ip-45', label: '45.142.182.11', nodeType: 'IP', details: 'Bulletproof Offshore C2 Server', country: 'Netherlands', reputation: 'Active C2 Controller', isMalicious: true },
+    { id: 'ip-185', label: '185.220.101.4', nodeType: 'IP', details: 'Frankfurt Phishing Origin Host', country: 'Germany', reputation: 'Phishing Backend', isMalicious: true },
+    { id: 'dom-ura', label: 'ura-etax-uganda-portal.net', nodeType: 'Domain', details: 'Spoofed URA Tax Portal', reputation: 'Confirmed Phishing', isMalicious: true },
+    { id: 'dom-momo', label: 'api-gateway-momo-ug.biz', nodeType: 'Domain', details: 'Fake Mobile Money Reversal API', reputation: 'Credential Harvester', isMalicious: true },
+    { id: 'asn-liquid', label: 'ASN 36982 (Liquid Uganda)', nodeType: 'Hosting / ASN', details: 'Uganda Local Transit Route', country: 'Uganda', isMalicious: false },
+    { id: 'asn-cloudflare', label: 'ASN 13335 (Cloudflare CDN)', nodeType: 'Hosting / ASN', details: 'Reverse Proxy Cloak', isMalicious: false },
+    { id: 'hash-trojan', label: 'MoMo_FastLoan.apk (SHA-256: a591a...)', nodeType: 'Malware Hash', details: 'SMS Intercept Spyware', isMalicious: true },
+    { id: 'inc-1042', label: 'Incident CGU-2026-1042', nodeType: 'Incident', details: 'Wakiso SACCO USSD Drain (UGX 8.5M)', isMalicious: false },
+    { id: 'inc-1088', label: 'Incident CGU-2026-1088', nodeType: 'Incident', details: 'Mukono URA Tax Smishing Burst', isMalicious: false }
+  ],
+  links: [
+    { source: 'actor-silver', target: 'ip-45', relationshipType: 'Suspected C2', isConfirmed: false, confidence: 85 },
+    { source: 'ip-45', target: 'dom-momo', relationshipType: 'Hosted On', isConfirmed: true, confidence: 98 },
+    { source: 'dom-momo', target: 'inc-1042', relationshipType: 'Observed In Incident', isConfirmed: true, confidence: 99 },
+    { source: 'ip-102', target: 'asn-liquid', relationshipType: 'Hosted On', isConfirmed: true, confidence: 95 },
+    { source: 'ip-102', target: 'ip-197', relationshipType: 'Exfiltration Channel', isConfirmed: true, confidence: 90 },
+    { source: 'ip-197', target: 'inc-1042', relationshipType: 'Observed In Incident', isConfirmed: true, confidence: 92 },
+    { source: 'actor-silver', target: 'hash-trojan', relationshipType: 'Shared Certificate', isConfirmed: true, confidence: 94 },
+    { source: 'hash-trojan', target: 'ip-45', relationshipType: 'Exfiltration Channel', isConfirmed: true, confidence: 96 },
+    { source: 'dom-ura', target: 'asn-cloudflare', relationshipType: 'DNS Resolves To', isConfirmed: true, confidence: 100 },
+    { source: 'dom-ura', target: 'ip-185', relationshipType: 'Hosted On', isConfirmed: true, confidence: 88, notes: 'Origin IP uncloaked via direct certificate handshake' },
+    { source: 'dom-ura', target: 'inc-1088', relationshipType: 'Observed In Incident', isConfirmed: true, confidence: 99 }
+  ]
+};
+
+

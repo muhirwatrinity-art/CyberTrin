@@ -9,6 +9,7 @@ import { ResearchDataCenter } from './components/ResearchDataCenter.tsx';
 import { AiMessageScannerModal } from './components/AiMessageScannerModal.tsx';
 import { GoogleMapsThreatView } from './components/GoogleMapsThreatView.tsx';
 import { GoogleWorkspaceHub } from './components/GoogleWorkspaceHub.tsx';
+import { DigitalInvestigationModule } from './components/investigation/DigitalInvestigationModule.tsx';
 import { 
   IncidentReport, 
   ThreatIndicator, 
@@ -35,6 +36,7 @@ export default function App() {
   const [advisories, setAdvisories] = useState<SecurityAdvisory[]>(INITIAL_ADVISORIES);
   const [tables, setTables] = useState<SchemaTable[]>(DATA_DICTIONARY_TABLES);
   const [phases, setPhases] = useState<MethodologyPhase[]>(METHODOLOGY_LOG_PHASES);
+  const [activeDangerCount, setActiveDangerCount] = useState<number>(2);
 
   // Scanner modal state
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -57,12 +59,13 @@ export default function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [incRes, iocRes, advRes, schemaRes, methRes] = await Promise.all([
+        const [incRes, iocRes, advRes, schemaRes, methRes, threatsRes] = await Promise.all([
           fetch('/api/incidents'),
           fetch('/api/threat-indicators'),
           fetch('/api/advisories'),
           fetch('/api/schema-definitions'),
-          fetch('/api/methodology-log')
+          fetch('/api/methodology-log'),
+          fetch('/api/automated-threats')
         ]);
 
         if (incRes.ok) {
@@ -84,6 +87,13 @@ export default function App() {
         if (methRes.ok) {
           const methData = await methRes.json();
           if (Array.isArray(methData) && methData.length > 0) setPhases(methData);
+        }
+        if (threatsRes.ok) {
+          const threatsData = await threatsRes.json();
+          if (Array.isArray(threatsData)) {
+            const unmitigated = threatsData.filter((t: any) => !t.isMitigated).length;
+            setActiveDangerCount(unmitigated);
+          }
         }
       } catch (err) {
         console.warn('Initial data load: using fallback seed data', err);
@@ -172,6 +182,7 @@ export default function App() {
           setIsScannerOpen(true);
         }}
         pendingTriageCount={pendingTriageCount}
+        activeDangerCount={activeDangerCount}
       />
 
       {/* Main View Area */}
@@ -220,6 +231,17 @@ export default function App() {
             onScanEmailSnippet={(text, sender) => {
               setScannerInitialText(`[Email from: ${sender}]\n\n${text}`);
               setIsScannerOpen(true);
+            }}
+          />
+        )}
+
+        {activeTab === 'investigation' && (
+          <DigitalInvestigationModule
+            incidents={incidents}
+            indicators={indicators}
+            onOpenReportWithIndicator={(ioc) => {
+              setReportPrefill({ description: `Observed malicious activity linked to: ${ioc}`, suspect: ioc });
+              setActiveTab('report');
             }}
           />
         )}
