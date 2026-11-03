@@ -1,0 +1,6 @@
+{
+  "name": "CyberTrin Uganda",
+  "description": "National Cybersecurity Threat Reporting & Intelligence Platform for Uganda. Report threats, analyze mobile money fraud with Gemini AI, verify threat indicators, explore Google Maps threat intelligence, and manage incidents via Google Workspace. Emergency hotline: +256 772590517.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
